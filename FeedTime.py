@@ -14,9 +14,11 @@ app.config.update(dict(
     SECRET_KEY='2\x8f\xc3+\x8b\xf2H[\x1a\xcd\xa0\xdd\xb0<s\xcc\x10\x94\x05\xf5\xf1\xd0\xbf['
 ))
 
+
 @app.route('/')
 def site_root():
     return Markup('This is stormgiant.net'+ session['access_token'])
+
 
 @app.route('/pinterest/login')
 def pinterest_login():
@@ -27,6 +29,7 @@ def pinterest_login():
     url += '&redirect_uri=https://stormgiant.net/pinterest/connect'
     url += '&scope=read_public,write_public'
     return redirect(url,code=302) 
+
 
 @app.route('/pinterest/connect')
 def pinterest_connect():
@@ -39,12 +42,22 @@ def pinterest_connect():
     session['access_token'] = r.json()['access_token']
     return redirect('https://stormgiant.net/pinterest', code=302)
 
+
 @app.route('/pinterest')
 def pinterest_home():
     if session['access_token'] is not None:
-        payload = { 'access_token':session['access_token'], 'fields':'id,name'}
-	r = requests.get('https://api.pinterest.com/v1/me/boards/', params=payload)
-	return render_template('pinterest.html', text = json.dumps(r.json(), indent=4))
+        boards = get_boards()
+        return render_template('pinterest.html', boards=boards)
     else:
         return render_template('pinterest.html')
 
+
+def get_boards():
+    payload = { 'access_token':session['access_token'], 'fields':'id,name'}
+    r = requests.get('https://api.pinterest.com/v1/me/boards/', params=payload)
+    return r.json()
+
+def get_pins_for_board():
+    payload = { 'access_token':session['access_token'], 'fields':'id,name'}
+    r = requests.get('https://api.pinterest.com/v1/me/boards/', params=payload)
+    return r.json()
