@@ -47,7 +47,8 @@ def pinterest_connect():
 def pinterest_home():
     if session['access_token'] is not None:
         boards = get_boards()
-        return render_template('pinterest.html', boards=boards)
+        pins =get_pins_for_board('lighting')
+        return render_template('pinterest.html', boards=boards, pins=pins)
     else:
         return render_template('pinterest.html')
 
@@ -57,7 +58,7 @@ def get_boards():
     r = requests.get('https://api.pinterest.com/v1/me/boards/', params=payload)
     return r.json()
 
-def get_pins_for_board():
+def get_pins_for_board(board):
     payload = { 'access_token':session['access_token'], 'fields':'id,name'}
-    r = requests.get('https://api.pinterest.com/v1/me/boards/', params=payload)
+    r = requests.get('https://api.pinterest.com/v1/me/'+board+'/pins/', params=payload)
     return r.json()

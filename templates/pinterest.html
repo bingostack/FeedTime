@@ -3,6 +3,10 @@
 <h1>Hello World!</h1>
 <a href="http://stormgiant.net/pinterest/login">Login to Pinterest</a>
 <br>
-{% if text %}
-  {{ text }}
+{% if boards %}
+<ul>
+  {% for b in boards %}
+<li>{{b.Name}}</li>
+</ul>
+
 {% endif %}
