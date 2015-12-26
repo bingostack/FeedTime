@@ -1,12 +1,40 @@
 <!doctype html>
+<html>
+<head>
 <title>FeedTime: Pinterest</title>
-<h1>Hello World!</h1>
-<a href="http://stormgiant.net/pinterest/login">Login to Pinterest</a>
-<br>
-{% if boards %}
-<ul>
-  {% for b in boards %}
-<li>{{b.Name}}</li>
-</ul>
-
-{% endif %}
+     <h1>Hello World!</h1>
+</head>
+<body>
+    <a href="http://stormgiant.net/pinterest/login">Login to Pinterest</a>
+    <br>
+    <form id="pinform" action="http://stormgiant.net/pinterest/pinit" method="post">
+        From:
+        {% if boards %}
+            <select name="source__board">
+                {% for board in boards %}
+                    <option>{{board['name']}}</option>
+                {% endfor %}
+            </select>
+        {% endif %}
+        To:
+        {% if boards %}
+            <select name="target_board">
+                {% for board in boards %}
+                    <option>{{board['name']}}</option>
+                {% endfor %}
+            </select>
+        {% endif %}
+        
+        Pin:
+        {% if pins %}
+            <select name="pin" style="width:200px">
+                {% for pin in pins %}
+                    <option> {{ pin['note'] }}</option>
+                {% endfor %}
+            </select>
+        {% endif %}
+        <input type="datetime-local" value="1985-04-12T23:20:50" />
+        <button type="submit" form="pinform">Schedule it</button>
+    </form> 
+</body>
+</html>

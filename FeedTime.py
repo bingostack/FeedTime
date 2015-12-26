@@ -45,20 +45,39 @@ def pinterest_connect():
 
 @app.route('/pinterest')
 def pinterest_home():
-    if session['access_token'] is not None:
+    if 'access_token' in session:
         boards = get_boards()
-        pins =get_pins_for_board('lighting')
+        pins = get_pins_for_board('Cocktails')
         return render_template('pinterest.html', boards=boards, pins=pins)
     else:
         return render_template('pinterest.html')
 
+@app.route('/pinterest/pinit', methods=['POST'])
+def submit_pin():
+    board = request.form['board']
+    pin = request.form['pin']
+    pins = get_pins_for_board(board)
+    selected_pin = None
+    for p in pins:
+	if p['note'] == pin:
+	    selected_pin = p
+            break
+    if selected_pin is None:
+         return Markup('Pinning failed')
+    payload = {'board': 'danbusha/'+board,
+               'note': p['note'], 
+	       'image_url': p['image']['original']['url'],
+               'access_token':session['access_token']}
+    r = requests.post('https://api.pinterest.com/v1/pins/', payload)
+    return Markup(r.text)
 
 def get_boards():
     payload = { 'access_token':session['access_token'], 'fields':'id,name'}
     r = requests.get('https://api.pinterest.com/v1/me/boards/', params=payload)
-    return r.json()
+    return r.json()['data']
 
 def get_pins_for_board(board):
-    payload = { 'access_token':session['access_token'], 'fields':'id,name'}
-    r = requests.get('https://api.pinterest.com/v1/me/'+board+'/pins/', params=payload)
-    return r.json()
+    payload = { 'access_token':session['access_token'], 'fields':'note,id,link,url,board,image'}
+    r = requests.get('https://api.pinterest.com/v1/boards/blossomtostem/Cocktails/pins/', params=payload)
+    return r.json()['data']
+
