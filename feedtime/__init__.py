@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+#!/usr/bin/python
+from flask import Flask, render_template, url_for
 from pinterest.pinterest import pinterest
 
 app = Flask(__name__)
@@ -12,8 +13,9 @@ app.register_blueprint(pinterest)
 
 @app.route('/')
 def index():
-    return 'This is stormgiant'
+    return 'This is stormgiant' + url_for('feedtime_index')
 
 @app.route('/feedtime')
 def feedtime_index():
     return render_template('feedtime.html')
+

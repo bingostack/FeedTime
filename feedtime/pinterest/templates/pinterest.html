@@ -1,40 +1,52 @@
 <!doctype html>
 <html>
 <head>
-<title>FeedTime: Pinterest</title>
-     <h1>Hello World!</h1>
+    <title>FeedTime: Pinterest</title>
+    <script type="text/javascript" src="{{url_for('.static',filename='pinterest.js') }}">
+    </script>
 </head>
 <body>
-    <a href="http://stormgiant.net/pinterest/login">Login to Pinterest</a>
-    <br>
-    <form id="pinform" action="http://stormgiant.net/pinterest/schedule" method="post">
-        From:
-        {% if boards %}
-            <select name="source__board">
-                {% for board in boards %}
-                    <option>{{board['name']}}</option>
-                {% endfor %}
-            </select>
-        {% endif %}
-        To:
-        {% if boards %}
-            <select name="target_board">
-                {% for board in boards %}
-                    <option>{{board['name']}}</option>
-                {% endfor %}
-            </select>
-        {% endif %}
-        
-        Pin:
-        {% if pins %}
-            <select name="pin" style="width:200px">
-                {% for pin in pins %}
-                    <option> {{ pin['note'] }}</option>
-                {% endfor %}
-            </select>
-        {% endif %}
-        <input type="datetime-local" value="1985-04-12T23:20:50" />
-        <button type="submit" form="pinform">Schedule it</button>
+    <form id="pinform" action="/pinterest/schedule"> 
+        <div>
+			From:
+			{% if boards %}
+				<select name="source_board" id="source" onchange="makeRequest(event.target)" >
+					{% for board in boards %}
+						<option value="{{ board[0] }}/{{ board[1] }}">{{board[1]}}</option>
+					{% endfor %}
+				</select>
+			{% endif %}
+        </div>
+        <div>
+			Pin:
+				<select name="pin" id="pinboard" style="width:200px">
+				</select>
+        </div>
+        <div>
+			To:
+			{% if boards %}
+				<select name="target_board">
+					{% for board in boards %}
+						<option value="{{ board[0] }}/{{ board[1] }}">{{board[1]}}</option>
+					{% endfor %}
+				</select>
+			{% endif %}
+        </div>
+        <div>
+            Time to post:
+			<input type="datetime-local" name="time"/>
+        </div>
+        <div>
+            Note:
+			<input type="text" name="note"/>
+        </div>
+        <div>
+            Link:
+			<input type="text" name="link" value="http://blossomtostem.net"/>
+        </div>
+        <div>
+			<button type="submit" form="pinform">Schedule it</button>
+        </div>
     </form> 
 </body>
 </html>
