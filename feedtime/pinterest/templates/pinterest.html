@@ -2,20 +2,20 @@
 <html>
 <head>
     <title>FeedTime: Pinterest</title>
-    <script type="text/javascript" src="{{url_for('.static',filename='pinterest.js') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('.static',filename='pinterest.css') }}">
+    <script type="text/javascript" src="{{ url_for('.static', filename='pinterest.js') }}">
     </script>
 </head>
 <body>
-    <form id="pinform" action="/pinterest/schedule"> 
+<div>
+    <form id="pinform" action="/pinterest/addpin" method='post'> 
         <div>
 			From:
-			{% if boards %}
-				<select name="source_board" id="source" onchange="makeRequest(event.target)" >
-					{% for board in boards %}
-						<option value="{{ board[0] }}/{{ board[1] }}">{{board[1]}}</option>
-					{% endfor %}
-				</select>
-			{% endif %}
+			<select name="source_board" id="source" onchange="requestPins(event.target)" >
+				{% for board in boards %}
+					<option value="{{ board[0] }}/{{ board[1] }}">{{board[1]}}</option>
+				{% endfor %}
+			</select>
         </div>
         <div>
 			Pin:
@@ -24,13 +24,11 @@
         </div>
         <div>
 			To:
-			{% if boards %}
-				<select name="target_board">
-					{% for board in boards %}
-						<option value="{{ board[0] }}/{{ board[1] }}">{{board[1]}}</option>
-					{% endfor %}
-				</select>
-			{% endif %}
+			<select name="target_board">
+				{% for board in boards %}
+					<option value="{{ board[0] }}/{{ board[1] }}">{{board[1]}}</option>
+				{% endfor %}
+			</select>
         </div>
         <div>
             Time to post:
@@ -48,6 +46,33 @@
 			<button type="submit" form="pinform">Schedule it</button>
         </div>
     </form> 
+</div>
+<div>
+    {% if entries %}
+        <table class="entries">
+            <th> Board </th>
+            <th> Note </th>
+            <th> Link </th>
+            <th> Image </th>
+            <th> Time </th>
+            <th> Is Pinned </th>
+            {% for entry in entries %}
+            <tr> 
+                <td>{{ entry['targetboard'] }}</td> 
+                <td>{{ entry['note'] }}</td> 
+                <td>{{ entry['link'] }}</td> 
+                <td>{{ entry['image_url'] }}</td> 
+                <td>{{ entry['time']}}</td> 
+                {% if entry['is_posted'] == 1  %}
+                    <td><img src=" {{ url_for('.static', filename='check-mark.png') }}"></td> 
+                {% else %}
+                    <td></td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+</div>
 </body>
 </html>
 

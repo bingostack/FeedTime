@@ -1,0 +1,18 @@
+.entries {
+        border-collapse: collapse;
+}
+
+.entries tr td { 
+        padding: 10px;
+}
+
+th { 
+        background-color: limegreen;
+}
+
+.entries img {
+        height: 20px; 
+        width: 20px;
+}
+
+tr:nth-child(even) {background-color: #f2f2f2}
