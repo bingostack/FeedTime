@@ -25,28 +25,36 @@ def pinterest_login():
     url += '&client_id=' + __client_id
     url += '&state=tw399afd'
     url += '&redirect_uri=https://stormgiant.net/pinterest/connect'
-    url += '&scope=read_public,write_public'
+    url += '&scope=read_public,write_public,read_relationships,write_relationships'
     return redirect(url, code=302)
 
 @pinterest.route('/pinterest/connect')
 def pinterest_connect():
     code =  request.args.get('code','')
-    session['access_token'] = get_access_token(code) 
-    session['username'] = get_username()
-    return redirect('https://stormgiant.net/pinterest', code=302)
+    token = get_access_token(code)
+    session['access_token'] = token 
+    username = get_username()
+    session['username'] = username
+    pindb.update_access_token(username, token)
+    return redirect('/pinterest', code=302)
 
 @pinterest.route('/pinterest/addpin', methods=['POST'])
 def submit_pin():
     if 'access_token' not in session:
         return redirect('http://stormgiant.net/pinterest', code=400)
-    pindb.insert_pin(request.form['source_board'],
+    source = request.form['source_board']
+    pin_id = request.form['pin_id']
+    url = get_url_for_pin(source, pin_id)
+    url = url.replace('http:', 'https:')
+    pindb.insert_pin(source,
                      request.form['target_board'],
                      request.form['note'],
-                     request.form['pin'],
+                     url,
                      request.form['link'],
                      request.form['time'],
-                     user = session['username'])
-    return redirect('http://stormgiant.net/pinterest', code=302)
+                     session['username'],
+                     pin_id)
+    return redirect('/pinterest', code=302)
 
 @pinterest.route('/pinterest/pins')
 def request_pins():
@@ -56,34 +64,35 @@ def request_pins():
 
 @pinterest.route('/pinterest/pinit')
 def process_pending_pins():
-    entries = pindb.get_databased_pins(session['username'])
+    tokens = pindb.get_all_access_tokens()
     to_post = []
     posted = []
-    url = '{0}/pins/'.format(_url)
-    for entry in entries:
-        if entry['is_posted'] == 0 and datetime.strptime(entry['time'],'%Y-%m-%dT%H:%M') < datetime.now():
-            to_post.append(entry)
-    for post in to_post:
-        pin = '' 
-        pins = get_pins_for_board(post['sourceboard'])
-        for p in pins:
-            if p['id'] == post['image_url']:
-                pin = p['image']['original']['url']
-                break
-        if pin == '':
+    result = ''
+    for token in tokens:
+        entries = pindb.get_databased_pins(token[1])
+        post_url = '{0}/pins/'.format(_url)
+        for entry in entries:
+            if entry['is_posted'] == 0 and datetime.strptime(entry['time'],'%Y-%m-%dT%H:%M') < datetime.now():
+                to_post.append([entry, token[2]])
+    for post_pair in to_post:
+        post = post_pair[0]
+        token = post_pair[1]
+        session['access_token'] = token
+        pin_url = get_url_for_pin(post['sourceboard'], post['pin_id'])
+        if pin_url is None:
             continue
         payload = { 
-               'access_token':session['access_token'],
+               'access_token': token,
                'board': post['targetboard'],
                'note': post['note'],
                'link': post['link'],
-               'image_url': pin }
-        r = requests.post(url,payload)
+               'image_url': pin_url }
+        r = requests.post(post_url, payload)
+        result += r.text
         if r.status_code == 200 or r.status_code == 201:
             posted.append(post['id'])
-    
-	pindb.update_posted_pins(posted)
-    return redirect('/pinterest', code=302)
+    pindb.update_posted_pins(posted)
+    return result
 
 def get_boards():
     payload = { 'access_token':session['access_token'], 'fields':'id,name,url'}
@@ -99,9 +108,17 @@ def get_pins_for_board(board):
     r = requests.get(_url + '/boards/{0}/pins/'.format(board), params=payload)
     return r.json()['data']
 
+def get_url_for_pin(board, pin_id):
+    pins = get_pins_for_board(board)
+    for p in pins:
+        if p['id'] == pin_id:
+            return p['image']['original']['url']
+    return None
+
 def get_username():
     url = '{0}/me/'.format(_url)
-    payload = {'access_token': session['access_token'], 'fields': 'username,first_name,last_name'}
+    token = session['access_token']
+    payload = {'access_token': token, 'fields': 'username,first_name,last_name'}
     r = requests.get(url, params=payload)
     return r.json()['data']['username']
 
@@ -113,7 +130,4 @@ def get_access_token(code):
                'code': request.args.get('code', '')}
     r = requests.post(url, payload)
     return r.json()['access_token']
-
-        
-
 

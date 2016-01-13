@@ -1,18 +1,53 @@
-.entries {
-        border-collapse: collapse;
+span#notefield {
+    vertical-align: top;
 }
 
-.entries tr td { 
-        padding: 10px;
+span {
+    width: 60px;
+    height: 25px;
+    display: inline-block;
+}
+
+.entries {
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+.entries tr { 
+    padding: 10px;
+}
+
+.entries td {
+    padding: 10px;
 }
 
 th { 
-        background-color: limegreen;
+    background-color: limegreen;
 }
 
 .entries img {
-        height: 20px; 
-        width: 20px;
+    height: 40px;
 }
 
 tr:nth-child(even) {background-color: #f2f2f2}
+
+
+.submit-button {
+    background: #25A6E1;
+    background: -moz-linear-gradient(top,#25A6E1 0%,#188BC0 100%);
+    background: -webkit-gradient(linear,left top,left bottom,color-stop(0%,#25A6E1),color-stop(100%,#188BC0));
+    background: -webkit-linear-gradient(top,#25A6E1 0%,#188BC0 100%);
+    background: -o-linear-gradient(top,#25A6E1 0%,#188BC0 100%);
+    background: -ms-linear-gradient(top,#25A6E1 0%,#188BC0 100%);
+    background: linear-gradient(top,#25A6E1 0%,#188BC0 100%);
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#25A6E1',endColorstr='#188BC0',GradientType=0);
+    padding:8px 13px;
+    color:#fff;
+    font-family:'Helvetica Neue',sans-serif;
+    font-size:17px;
+    border-radius:4px;
+    -moz-border-radius:4px;
+    -webkit-border-radius:4px;
+    border:1px solid #1A87B9;
+    margin: 15px 15px;
+}

@@ -8,5 +8,6 @@ create table pins (
     link text,
     datetime text not null,
     is_posted integer not null default 0,
-    pin_user text not null
+    pin_user text not null,
+    pin_id text not null
 );

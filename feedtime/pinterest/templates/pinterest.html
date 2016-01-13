@@ -10,7 +10,7 @@
 <div>
     <form id="pinform" action="/pinterest/addpin" method='post'> 
         <div>
-			From:
+            <span>From:</span>
 			<select name="source_board" id="source" onchange="requestPins(event.target)" >
 				{% for board in boards %}
 					<option value="{{ board[0] }}/{{ board[1] }}">{{board[1]}}</option>
@@ -18,12 +18,12 @@
 			</select>
         </div>
         <div>
-			Pin:
-				<select name="pin" id="pinboard" style="width:200px">
-				</select>
+            <span>Pin: </span>
+			<select name="pin_id" id="pinboard" style="width:400px">
+			</select>
         </div>
         <div>
-			To:
+			<span>To:</span>
 			<select name="target_board">
 				{% for board in boards %}
 					<option value="{{ board[0] }}/{{ board[1] }}">{{board[1]}}</option>
@@ -31,43 +31,47 @@
 			</select>
         </div>
         <div>
-            Time to post:
+            <span>Time:</span>
 			<input type="datetime-local" name="time"/>
         </div>
         <div>
-            Note:
-			<input type="text" name="note"/>
+            <span id="notefield">Note:</span>
+			<textarea name="note"></textarea>
         </div>
         <div>
-            Link:
-			<input type="text" name="link" value="http://blossomtostem.net"/>
+            <span>Link:</span>
+			<input type="text" name="link" value="http://blossomtostem.net" style="width:300px"/>
         </div>
         <div>
-			<button type="submit" form="pinform">Schedule it</button>
+			<button type="submit" form="pinform" class="submit-button">Schedule it</button>
         </div>
     </form> 
 </div>
 <div>
     {% if entries %}
         <table class="entries">
+            <th> Is Pinned </th>
             <th> Board </th>
-            <th> Note </th>
             <th> Link </th>
             <th> Image </th>
+            <th> Date </th>
             <th> Time </th>
-            <th> Is Pinned </th>
+            <th> Note </th>
             {% for entry in entries %}
             <tr> 
-                <td>{{ entry['targetboard'] }}</td> 
-                <td>{{ entry['note'] }}</td> 
-                <td>{{ entry['link'] }}</td> 
-                <td>{{ entry['image_url'] }}</td> 
-                <td>{{ entry['time']}}</td> 
-                {% if entry['is_posted'] == 1  %}
-                    <td><img src=" {{ url_for('.static', filename='check-mark.png') }}"></td> 
-                {% else %}
-                    <td></td>
-                {% endif %}
+                <td style="width:20px;">
+                    {% if entry['is_posted'] == 1  %}
+                        <img class="check-mage" style="height:20px;width:20px" src=" {{ url_for('.static', filename='check-mark.png') }}">
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="http://pinterest.com/{{ entry['targetboard'] }}"> {{ entry['board'] }} </a>
+                </td> 
+                <td><a href="{{ entry['link'] }}">Link</a></td> 
+                <td><img src="{{ entry['image_url'] }}"></td> 
+                <td>{{ entry['time'][0:10] }}</td> 
+                <td>{{ entry['time'][11:] }}</td> 
+                <td>{{ entry['note'] }}</td>
             </tr>
             {% endfor %}
         </table>
