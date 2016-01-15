@@ -1,7 +1,7 @@
 from datetime import datetime
 import pindb
 import requests
-from flask import request, session, redirect, render_template, Markup, Blueprint, Flask, jsonify
+from flask import request, session, redirect, render_template, Markup, Blueprint, Flask, jsonify, url_for
 from . import pinterest
 from contextlib import closing
 
@@ -24,7 +24,7 @@ def pinterest_login():
     url += '?response_type=code'
     url += '&client_id=' + __client_id
     url += '&state=tw399afd'
-    url += '&redirect_uri=https://stormgiant.net/pinterest/connect'
+    url += '&redirect_uri=https://stormgiant.net'+url_for('pinterest.pinterest_connect')
     url += '&scope=read_public,write_public,read_relationships,write_relationships'
     return redirect(url, code=302)
 
@@ -36,16 +36,15 @@ def pinterest_connect():
     username = get_username()
     session['username'] = username
     pindb.update_access_token(username, token)
-    return redirect('/pinterest', code=302)
+    return redirect(url_for('pinterest.pinterest_home'), code=302)
 
 @pinterest.route('/pinterest/addpin', methods=['POST'])
 def submit_pin():
     if 'access_token' not in session:
-        return redirect('http://stormgiant.net/pinterest', code=400)
+        return redirect(url_for('pinterest.pinterest_home'), code=302)
     source = request.form['source_board']
     pin_id = request.form['pin_id']
     url = get_url_for_pin(source, pin_id)
-    url = url.replace('http:', 'https:')
     pindb.insert_pin(source,
                      request.form['target_board'],
                      request.form['note'],
@@ -54,7 +53,7 @@ def submit_pin():
                      request.form['time'],
                      session['username'],
                      pin_id)
-    return redirect('/pinterest', code=302)
+    return redirect(url_for('pinterest.pinterest_home'), code=302)
 
 @pinterest.route('/pinterest/pins')
 def request_pins():
