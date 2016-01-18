@@ -13,7 +13,7 @@ app.register_blueprint(pinterest)
 
 @app.route('/')
 def index():
-    return 'This is stormgiant' + url_for('feedtime_index',url_prefix='dev')
+    return 'This is stormgiant' + url_for('feedtime_index')
 
 @app.route('/feedtime')
 def feedtime_index():
