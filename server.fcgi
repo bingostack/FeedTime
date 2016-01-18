@@ -1,6 +1,6 @@
 #!/usr/bin/python
 from flup.server.fcgi import WSGIServer
-from feedtime import app
+from __init__ import app
 
 if __name__ == '__main__':
     WSGIServer(app).run()
