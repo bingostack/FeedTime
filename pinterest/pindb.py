@@ -1,7 +1,7 @@
 import sqlite3
 
 def connect_to_db():
-    return sqlite3.connect('/tmp/pin.db')
+    return sqlite3.connect('/var/www/stormgiant.net/dev/feedtime/dbs/pin.db')
 
 def get_access_token(username):
     db = connect_to_db();
