@@ -51,3 +51,10 @@ tr:nth-child(even) {background-color: #f2f2f2}
     border:1px solid #1A87B9;
     margin: 15px 15px;
 }
+
+#pin_img {
+	position: absolute;
+    left: 400px;
+    width: 100px;
+    height: 100px;
+}

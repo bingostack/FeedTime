@@ -37,6 +37,13 @@ def insert_pin(source, target, note, image_url, link, time, user, pin_id):
     db.commit()
     db.close()
 
+def delete_pin(pinid):
+    query = "delete from pins where id='{0}'".format(pinid)
+    db = connect_to_db()
+    db.execute(query)
+    db.commit()
+    db.close()
+
 def update_posted_pins(posted):
     if len(posted) == 0:
         return

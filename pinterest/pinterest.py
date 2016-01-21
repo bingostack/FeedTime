@@ -55,11 +55,29 @@ def submit_pin():
                      pin_id)
     return redirect(url_for('pinterest.pinterest_home'), code=302)
 
+@pinterest.route('/pinterest/deletepin', methods=['POST'])
+def delete_pin():
+    if 'access_token' not in session:
+        return redirect(url_for('pinterest.pinterest_home'), code=302)
+    pin = request.form['pinid']
+    pindb.delete_pin(pin)
+    return redirect(url_for('pinterest.pinterest_home'), code=302)
+
 @pinterest.route('/pinterest/pins')
 def request_pins():
     board = request.args.get('board', '')
     pins = get_pins_for_board(board)
     return jsonify(result=pins)
+
+@pinterest.route('/pinterest/get_img')
+def get_img_url():
+    pin_id = request.args.get('pin', '')
+    board = request.args.get('board', '')
+    response = get_url_for_pin(board, pin_id)
+    if response is not None:
+        return response
+    else:
+        return  url_for('.static', filename='check-mark.png')
 
 @pinterest.route('/pinterest/pinit')
 def process_pending_pins():

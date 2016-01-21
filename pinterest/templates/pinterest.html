@@ -8,32 +8,42 @@
 		function requestPins(control)
 		{
 			var url = '{{ url_for('pinterest.request_pins') }}?board=' + control.value;
-			var callback = function(){onPinsReturned()};
+			var callback = function() { onPinsReturned() };
+			makeRequest(url, callback);
+		}
+
+		function getPinUrl() 
+        {
+			var board = document.getElementById("source");
+			var pin = document.getElementById("pinboard");
+			var url = '{{ url_for('pinterest.get_img_url') }}' + '?pin=' + pin.value + '&board=' + board.value;
+			var callback = function() { onUrlReturned() };
 			makeRequest(url, callback);
 		}
 	</script>
 </head>
 <body>
 <div>
-    <form id="pinform" action="{{url_for('pinterest.submit_pin') }}" method='post'> 
+    <form id="pinform" action="{{ url_for('pinterest.submit_pin') }}" method='post'> 
         <div>
             <span>From:</span>
 			<select name="source_board" id="source" onchange="requestPins(event.target)" >
 				{% for board in boards %}
-					<option value="{{ board[0] }}/{{ board[1] }}">{{board[1]}}</option>
+					<option value="{{ board[0] }}/{{ board[1] }}">{{ board[1] }}</option>
 				{% endfor %}
 			</select>
         </div>
         <div>
             <span>Pin: </span>
-			<select name="pin_id" id="pinboard" style="width:400px">
-			</select>
+			<select name="pin_id" id="pinboard" style="width:400px" onchange="getPinUrl()"> </select>
+            <br/>
+            <img id="pin_img">
         </div>
         <div>
 			<span>To:</span>
 			<select name="target_board">
 				{% for board in boards %}
-					<option value="{{ board[0] }}/{{ board[1] }}">{{board[1]}}</option>
+					<option value="{{ board[0] }}/{{ board[1] }}">{{ board[1] }}</option>
 				{% endfor %}
 			</select>
         </div>
@@ -64,6 +74,7 @@
             <th> Date </th>
             <th> Time </th>
             <th> Note </th>
+            <th> Action </th>
             {% for entry in entries %}
             <tr> 
                 <td style="width:20px;">
@@ -79,6 +90,12 @@
                 <td>{{ entry['time'][0:10] }}</td> 
                 <td>{{ entry['time'][11:] }}</td> 
                 <td>{{ entry['note'] }}</td>
+				<td>
+					<form method="post" id="deletepin" action="{{ url_for('pinterest.delete_pin')  }}">
+						<input type="hidden" name="pinid" value="{{ entry['id']  }}">
+						<button type="submit" form="deletepin">Delete</button>
+					</form>
+               </td>
             </tr>
             {% endfor %}
         </table>
