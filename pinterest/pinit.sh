@@ -1,1 +1,1 @@
-curl http://stormgiant.net/pinterest/pinit
+wget http://stormgiant.net/feed/pinterest/pinit --no-check-certificate
