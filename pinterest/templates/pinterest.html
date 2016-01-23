@@ -12,11 +12,11 @@
 			makeRequest(url, callback);
 		}
 
-		function getPinUrl() 
+		function getPinData() 
         {
 			var board = document.getElementById("source");
 			var pin = document.getElementById("pinboard");
-			var url = '{{ url_for('pinterest.get_img_url') }}' + '?pin=' + pin.value + '&board=' + board.value;
+			var url = '{{ url_for('pinterest.get_pin_data') }}' + '?pin=' + pin.value + '&board=' + board.value;
 			var callback = function() { onUrlReturned() };
 			makeRequest(url, callback);
 		}
@@ -35,7 +35,7 @@
         </div>
         <div>
             <span>Pin: </span>
-			<select name="pin_id" id="pinboard" style="width:400px" onchange="getPinUrl()"> </select>
+			<select name="pin_id" id="pinboard" style="width:400px" onchange="getPinData()"> </select>
             <br/>
             <img id="pin_img">
         </div>
@@ -53,11 +53,11 @@
         </div>
         <div>
             <span id="notefield">Note:</span>
-			<textarea name="note"></textarea>
+			<textarea name="note" id="pin_note"></textarea>
         </div>
         <div>
             <span>Link:</span>
-			<input type="text" name="link" value="http://blossomtostem.net" style="width:300px"/>
+			<input type="text" name="link" id="pin_link" style="width:300px"/>
         </div>
         <div>
 			<button type="submit" form="pinform" class="submit-button">Schedule it</button>

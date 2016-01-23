@@ -30,7 +30,7 @@ function onPinsReturned()
 				var note = data[i].note;
 				pin_select.options.add(new Option(note, id));   
 			}
-            getPinUrl();
+            getPinData();
 		} else { alert('There was a problem with the request.'); }
 	}
 };
@@ -40,7 +40,12 @@ function onUrlReturned()
 	if (httpRequest.readyState === XMLHttpRequest.DONE) {
 		if (httpRequest.status === 200) {
 			var pin_img = document.getElementById("pin_img");
-            pin_img.src = httpRequest.responseText;
+			var json = JSON.parse(httpRequest.responseText).result;
+            pin_img.src = json['image']['original']['url']
+            var note = document.getElementById("pin_note");
+            note.value = json["note"] 
+			var link = document.getElementById("pin_link");
+			pin_link.value = json['original_link'];
 		} else { alert('There was a problem with the request.'); }
     }
 };

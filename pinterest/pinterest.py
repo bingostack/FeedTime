@@ -69,13 +69,13 @@ def request_pins():
     pins = get_pins_for_board(board)
     return jsonify(result=pins)
 
-@pinterest.route('/pinterest/get_img')
-def get_img_url():
+@pinterest.route('/pinterest/get_pin_data')
+def get_pin_data():
     pin_id = request.args.get('pin', '')
     board = request.args.get('board', '')
-    response = get_url_for_pin(board, pin_id)
+    response = request_pin_data(board, pin_id)
     if response is not None:
-        return response
+        return jsonify(result=response)
     else:
         return  url_for('.static', filename='check-mark.png')
 
@@ -121,15 +121,19 @@ def get_boards():
     return boards
 
 def get_pins_for_board(board):
-    payload = { 'access_token':session['access_token'], 'fields':'note,id,link,url,board,image'}
+    payload = { 'access_token':session['access_token'], 'fields':'note,id,link,url,board,image,original_link'}
     r = requests.get(_url + '/boards/{0}/pins/'.format(board), params=payload)
     return r.json()['data']
 
 def get_url_for_pin(board, pin_id):
+    p = request_pin_data(board, pin_id)
+    return p['image']['original']['url'] if p is not None else url_for('.static', filename='check-mark.png')
+
+def request_pin_data(board, pin_id):
     pins = get_pins_for_board(board)
     for p in pins:
         if p['id'] == pin_id:
-            return p['image']['original']['url']
+            return p
     return None
 
 def get_username():
